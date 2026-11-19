@@ -257,7 +257,6 @@ import { EventCardComponent } from '../../components/event-card/event-card.compo
       color: #7b8098;
       font-weight: 600;
     }
-
     .role {
       background: #eeefff;
       color: #5556c9;
