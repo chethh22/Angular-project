@@ -22,8 +22,15 @@ import { EventCardComponent } from '../../components/event-card/event-card.compo
           <span>E</span> EventNest
         </a>
 
-        <div>
-          <span class="role">{{ role }}</span>
+        <div class="user-meta">
+          <div class="user-badge" *ngIf="currentUser">
+            <span class="user-avatar">{{ userInitials }}</span>
+            <div class="user-info">
+              <span class="user-name">{{ currentUser.name }}</span>
+              <span class="user-role">{{ role }}</span>
+            </div>
+          </div>
+          <span class="role" *ngIf="!currentUser">{{ role }}</span>
           <button class="logout" (click)="logout()">Log out</button>
         </div>
       </header>
@@ -205,6 +212,51 @@ import { EventCardComponent } from '../../components/event-card/event-card.compo
       margin-right: 8px;
     }
 
+    .user-meta {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .user-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 12px 6px 6px;
+      background: #f4f5fc;
+      border-radius: 40px;
+      border: 1px solid #e3e6f2;
+    }
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #5b5ce2;
+      color: white;
+      font-size: 11px;
+      font-weight: 800;
+      display: grid;
+      place-items: center;
+    }
+
+    .user-info {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.15;
+    }
+
+    .user-name {
+      font-size: 13px;
+      font-weight: 750;
+      color: #24283d;
+    }
+
+    .user-role {
+      font-size: 11px;
+      color: #7b8098;
+      font-weight: 600;
+    }
     .role {
       background: #eeefff;
       color: #5556c9;
@@ -215,12 +267,21 @@ import { EventCardComponent } from '../../components/event-card/event-card.compo
     }
 
     .logout {
-      border: 0;
-      background: transparent;
+      border: 1px solid #dfe2ee;
+      background: white;
       color: #656b7e;
       cursor: pointer;
-      margin-left: 14px;
       font-weight: 650;
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      transition: all 0.15s ease;
+    }
+
+    .logout:hover {
+      background: #f7f8fd;
+      color: #24283d;
+      border-color: #cbcfde;
     }
 
     .content {
@@ -466,6 +527,16 @@ export class DashboardComponent implements OnInit {
   private readonly router = inject(Router);
 
   role = this.authService.getRole() ?? 'Participant';
+  currentUser = this.authService.getCurrentUser();
+
+  get userInitials(): string {
+    if (!this.currentUser?.name) return 'U';
+    const parts = this.currentUser.name.trim().split(' ');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return parts[0].slice(0, 2).toUpperCase();
+  }
 
   get canManageEvents(): boolean {
     return this.role === 'Admin' || this.role === 'Organizer';
